@@ -2,14 +2,24 @@
   <div class="contents">
     <section id="page">
       <div class="page__room_sell">
+        <div v-show="is_show" class="morePage__popup" id="popup">
+          <div class="black-bg">
+            <div class="white-bg">
+              <h4>상세페이지</h4>
+              <p>상세페이지 내용</p>
+              <button @click="handle_popup">닫기</button>
+            </div>
+          </div>
+        </div>
         <div class="menu">
           <a v-for="(a,i) in navdata" :key="i">{{a}}</a>
         </div>
         <img src="@/assets/logo.png" alt="logo">
-        <div class="txt_area" v-for="(item, i) in name" :key="i">
-          <h4>{{item}}원룸</h4>
-          <p :style="fs">{{i+1}}0만원</p>
-          <button @click="addNum(i)">신고수</button><br/>
+        <div class="txt_area" v-for="(item, i) in products" :key="i">
+          <a @click="handle_popup"><img :src="item.url" class="roomImg-size"></a>
+          <h4><a @click="handle_popup">{{item.name}}</a></h4>
+          <p :style="fs">{{item.price}}만원</p>
+          <button @click="addNum(i)">허위매물신고</button><br/>
           <span>{{num[i]}}</span>
         </div>
       </div>
@@ -26,10 +36,16 @@ export default {
       /* HTML속성도 데이터 바인딩 가능함 */
       fs: 'color:red',
       num:[], // 신고수
+      products:[ // 저장되어 있는 상대주소는 단순 String이기 때문에 해당 경로를 import한다는 의미로 require을 사용해야함
+        {url:require('./assets/room0.jpg'), name:'역삼동원룸', price:30},
+        {url:require('./assets/room1.jpg'),name:'천호동원룸', price:50}, 
+        {url:require('./assets/room2.jpg'),name:'마포구원룸', price:90},
+      ],
       navdata:['Home', 'Shop', 'About'],
-      name:['역삼동', '천호동', '마포구'],
+      is_show:false,
     }
   },
+  // mounted 사용해보기 [별 의미xx]
   mounted() {
     for(let i=0; i<this.navdata.length; i++){
       this.num.push(0);
@@ -38,12 +54,41 @@ export default {
   methods:{
     addNum(i){
       this.num[i] += 1;
+    },
+    handle_popup(){
+      this.is_show = !this.is_show;
     }
   }
 }
 </script>
 
 <style>
+  body{
+    margin:0;
+  }
+  div{
+    box-sizing: border-box;
+  }
+  a{
+    cursor: pointer;
+  }
+  .black-bg{
+    width:100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    position: fixed;
+    padding: 20px;
+  }
+  .white-bg{
+    width: 43%;
+    background: #FFF;
+    border-radius: 8px;
+    padding: 20px;
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+  }
   .contents{
     position: relative;
     margin: 0 auto;
@@ -57,5 +102,13 @@ export default {
   .menu a{
     color: #FFF;
     padding: 10px;
+  }
+  .menu a:hover{
+    color: rgb(170, 170, 170);
+    padding: 10px;
+  }
+  .roomImg-size{
+    width:50%;
+    margin-top: 40px;
   }
 </style>
