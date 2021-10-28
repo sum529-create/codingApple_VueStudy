@@ -5,9 +5,9 @@
         <div v-show="is_show" class="morePage__popup" id="popup">
           <div class="black-bg">
             <div class="white-bg">
-              <h4>상세페이지</h4>
-              <p>상세페이지 내용</p>
-              <button @click="handle_popup">닫기</button>
+              <h4>{{onerooms[pnum].title}}</h4>
+              <p>{{onerooms[pnum].content}}</p>
+              <button @click="handle_popup(0)">닫기</button>
             </div>
           </div>
         </div>
@@ -15,9 +15,18 @@
           <a v-for="(a,i) in navdata" :key="i">{{a}}</a>
         </div>
         <img src="@/assets/logo.png" alt="logo">
-        <div class="txt_area" v-for="(item, i) in products" :key="i">
+        <!-- <div class="txt_area" v-for="(item, i) in products" :key="i">
           <a @click="handle_popup"><img :src="item.url" class="roomImg-size"></a>
           <h4><a @click="handle_popup">{{item.name}}</a></h4>
+          <p :style="fs">{{item.price}}만원</p>
+          <button @click="addNum(i)">허위매물신고</button><br/>
+          <span>{{num[i]}}</span>
+        </div> -->
+
+        <!-- 데이터 외부에서 불러와 사용하기 -->
+        <div class="txt_area" v-for="(item, i) in onerooms" :key="i">
+          <a @click="handle_popup(item.id)"><img :src="item.image" class="roomImg-size"></a>
+          <h4><a @click="handle_popup(item.id)">{{item.title}}</a></h4>
           <p :style="fs">{{item.price}}만원</p>
           <button @click="addNum(i)">허위매물신고</button><br/>
           <span>{{num[i]}}</span>
@@ -29,6 +38,7 @@
 </template>
 
 <script>
+import onerooms from '@/assets/oneroom';
 export default {
   name: 'App',
   data(){
@@ -41,13 +51,15 @@ export default {
         {url:require('./assets/room1.jpg'),name:'천호동원룸', price:50}, 
         {url:require('./assets/room2.jpg'),name:'마포구원룸', price:90},
       ],
+      onerooms,
       navdata:['Home', 'Shop', 'About'],
       is_show:false,
+      pnum:0
     }
   },
   // mounted 사용해보기 [별 의미xx]
   mounted() {
-    for(let i=0; i<this.navdata.length; i++){
+    for(let i=0; i<this.onerooms.length; i++){
       this.num.push(0);
     }
   },
@@ -55,7 +67,8 @@ export default {
     addNum(i){
       this.num[i] += 1;
     },
-    handle_popup(){
+    handle_popup(i){
+      this.pnum = i;
       this.is_show = !this.is_show;
     }
   }
