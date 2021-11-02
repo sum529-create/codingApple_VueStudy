@@ -2,19 +2,20 @@
   <div class="contents">
     <section id="page">
       <div class="page__room_sell">
-        <div v-show="is_show" class="morePage__popup" id="popup">
-          <div class="black-bg">
-            <div class="white-bg">
-              <h4>{{onerooms[pnum].title}}</h4>
-              <p>{{onerooms[pnum].content}}</p>
-              <button @click="handle_popup(0)">닫기</button>
-            </div>
-          </div>
-        </div>
+
+        <!-- <Modal :데이터이름="데이터이름"/> ':'는 v-bind와 동일 -->
+        <!-- 
+          부모에게 메세지 보낼 땐
+         -->
+        <Modal @openModal="handle_popup" :onerooms="onerooms" :pnum="pnum" :is_show="is_show"/>
+
         <div class="menu">
           <a v-for="(a,i) in navdata" :key="i">{{a}}</a>
         </div>
-        <img src="@/assets/logo.png" alt="logo">
+
+        <Discount/>
+
+        <!-- 내부에서 데이터 사용 -->
         <!-- <div class="txt_area" v-for="(item, i) in products" :key="i">
           <a @click="handle_popup"><img :src="item.url" class="roomImg-size"></a>
           <h4><a @click="handle_popup">{{item.name}}</a></h4>
@@ -24,13 +25,7 @@
         </div> -->
 
         <!-- 데이터 외부에서 불러와 사용하기 -->
-        <div class="txt_area" v-for="(item, i) in onerooms" :key="i">
-          <a @click="handle_popup(item.id)"><img :src="item.image" class="roomImg-size"></a>
-          <h4><a @click="handle_popup(item.id)">{{item.title}}</a></h4>
-          <p :style="fs">{{item.price}}만원</p>
-          <button @click="addNum(i)">허위매물신고</button><br/>
-          <span>{{num[i]}}</span>
-        </div>
+        <Card @openModal="handle_popup" v-for="(item, i) in onerooms" :key="i" :num="num" :item="onerooms[i]"/>
       </div>
     </section>
   </div>
@@ -39,12 +34,15 @@
 
 <script>
 import onerooms from '@/assets/oneroom';
+import Discount from '@/components/Discount';
+import Modal from '@/components/Modal';
+import Card from '@/components/Card';
+
 export default {
   name: 'App',
   data(){
     return {
       /* HTML속성도 데이터 바인딩 가능함 */
-      fs: 'color:red',
       num:[], // 신고수
       products:[ // 저장되어 있는 상대주소는 단순 String이기 때문에 해당 경로를 import한다는 의미로 require을 사용해야함
         {url:require('./assets/room0.jpg'), name:'역삼동원룸', price:30},
@@ -71,6 +69,11 @@ export default {
       this.pnum = i;
       this.is_show = !this.is_show;
     }
+  },
+  components:{
+    Discount,
+    Modal,
+    Card,
   }
 }
 </script>
