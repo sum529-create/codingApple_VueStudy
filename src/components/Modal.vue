@@ -6,7 +6,7 @@
             <h4>{{onerooms[pnum].title}}</h4>
             <p>{{onerooms[pnum].content}}</p>
             <!-- <input type="number" @input="month = $event.target.value">  -->
-            <input v-model="month">
+            <input v-model="month" style="width: inherit;" placeholder="개월 수를 입력해주세요.">
             <!-- 
               @input : 입력시 마다 반응
               $event : addEventListner
@@ -34,18 +34,24 @@ export default {
         month:1, // 초기값을 생성하고자 할시 값의 타입을 잘 생각할것 ex) String -> month:'asd'
       }
     },
+    beforeUpdate(){ // Update되기 전에 데이터 검사
+      if (this.month == 2){
+        alert('2개월 입력했습니다');
+      }
+    },
     // 데이터감시
     watch:{
       // 감시할 데이터 (ex.month라는 데이터가 변할 때마다 여기있는 코드 실행됨)
-      // ex)month(a){ ... }   a -> month데이터
+      // ex) month(a){ ... }   a -> month데이터(변경 될 데이터)
+      // ex) month(a,b){ ... } a-> 변경 될 데이터  b-> 변경 전 데이터
       month(data){
         if(data > 12){
           alert('12개월안으로 입력해주십시오');
           this.month = 12;
         }
-        else if(typeof(data) === 'string'){
-          // alert('문자입력 불가');
+        else if(isNaN(data)){
           this.month = 1;
+          alert('문자입력 불가');
         }
       },
     },

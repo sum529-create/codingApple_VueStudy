@@ -3,26 +3,35 @@
     <section id="page">
       <div class="page__room_sell">
 
-        <!-- <Modal :데이터이름="데이터이름"/> ':'는 v-bind와 동일 -->
         <!-- 
+          <Modal :데이터이름="데이터이름"/> ':'는 v-bind와 동일 
+
           부모에게 메세지 보낼 땐
+          $emit('작명', 데이터) / @작명="메서드"
+
+          class명을 조건부로 넣으려면 { 클래스명: 조건(mehtod) }
+
+          <transition>...</transition> 으로 감싸서 애니매이션 요소를 줘도 됨
+            -  name="" 작명 지정
          -->
-        <Modal @openModal="handle_popup" :onerooms="onerooms" :pnum="pnum" :is_show="is_show"/>
+         <!-- <div class="start" :class="{ end : handle_popup }">
+          <Modal @openModal="handle_popup" :onerooms="onerooms" :pnum="pnum" :is_show="is_show"/>
+         </div> -->
+         <transition name="fade">
+          <Modal @openModal="handle_popup" :onerooms="onerooms" :pnum="pnum" :is_show="is_show"/>
+         </transition>
 
         <div class="menu">
           <a v-for="(a,i) in navdata" :key="i">{{a}}</a>
         </div>
 
-        <Discount/>
+        <Discount v-if="showDiscount == true" />
 
-        <!-- 내부에서 데이터 사용 -->
-        <!-- <div class="txt_area" v-for="(item, i) in products" :key="i">
-          <a @click="handle_popup"><img :src="item.url" class="roomImg-size"></a>
-          <h4><a @click="handle_popup">{{item.name}}</a></h4>
-          <p :style="fs">{{item.price}}만원</p>
-          <button @click="addNum(i)">허위매물신고</button><br/>
-          <span>{{num[i]}}</span>
-        </div> -->
+        <button @click="priceSort">가격순정렬</button>
+        <button @click="sortBack">되돌리기</button>
+        <button @click="sortKor">가나다 정렬</button>
+        <button @click="sortReverse">역순 정렬</button>
+        <button @click="sortFifbelow">50만원 이하</button>
 
         <!-- 데이터 외부에서 불러와 사용하기 -->
         <Card @openModal="handle_popup" v-for="(item, i) in onerooms" :key="i" :num="num" :item="onerooms[i]"/>
@@ -49,17 +58,23 @@ export default {
         {url:require('./assets/room1.jpg'),name:'천호동원룸', price:50}, 
         {url:require('./assets/room2.jpg'),name:'마포구원룸', price:90},
       ],
+      orgOnerooms : [...onerooms], // [...name] -> shallow copy 다른 카피본을 미리 만들어둔다.(array/object 데이터 각각 별개 사본제작)
       onerooms,
       navdata:['Home', 'Shop', 'About'],
       is_show:false,
-      pnum:0
+      pnum:0,
+      showDiscount: true,
     }
   },
   // mounted 사용해보기 [별 의미xx]
+  // 컴포넌트가 잘 적용이되어 index.html에 잘
   mounted() {
     for(let i=0; i<this.onerooms.length; i++){
       this.num.push(0);
     }
+    setTimeout(() => {
+      this.showDiscount = false
+    },10000);
   },
   methods:{
     addNum(i){
@@ -68,7 +83,27 @@ export default {
     handle_popup(i){
       this.pnum = i;
       this.is_show = !this.is_show;
-    }
+    },
+    priceSort(){
+      // 원본변형:sort() <-> 원본보존:filter(), map()
+      this.onerooms.sort(function(a,b){
+        return a.price - b.price; // {}안에 있던 price항목
+      })
+    },
+    sortBack(){
+      this.onerooms = [...this.orgOnerooms];
+    },
+    sortKor(){
+      this.onerooms.sort(function(a,b){
+        return a.title<b.title ? -1: a.title==b.title ? 0:1;
+      });
+    },
+    sortReverse(){
+      return this.onerooms.reverse();
+    },
+    sortFifbelow(){
+      return this.onerooms.price < 500000;
+    },
   },
   components:{
     Discount,
@@ -88,23 +123,6 @@ export default {
   a{
     cursor: pointer;
   }
-  .black-bg{
-    width:100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    position: fixed;
-    padding: 20px;
-  }
-  .white-bg{
-    width: 43%;
-    background: #FFF;
-    border-radius: 8px;
-    padding: 20px;
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform:translate(-50%, -50%);
-  }
   .contents{
     position: relative;
     margin: 0 auto;
@@ -123,8 +141,32 @@ export default {
     color: rgb(170, 170, 170);
     padding: 10px;
   }
-  .roomImg-size{
-    width:50%;
-    margin-top: 40px;
+  .start{
+    opacity: 0;
+    transition: all 1s;
+  }
+  .end{
+    opacity: 1;
+  }
+/* 
+  <transition name="작명"> .. </transition>
+  .작명-enter-from { 시작스타일 }
+  .작명-enter-active { transition }
+  .작명-enter-to { 끝날때스타일 }
+  <-> 퇴장 애니메이션
+  .작명-leave-from { 시작스타일 }
+  .작명-leave-active { transition }
+  .작명-enter-to { 끝날때스타일 }
+*/
+  .fade-enter-from {
+    /* 시작 시 스타일 */
+    opacity: 0;
+  }
+  .fade-enter-active {
+    transition: all 1s;
+  }
+  .fade-enter-to {
+    /* 끝날 시 스타일 */
+    opacity: 1;
   }
 </style>
