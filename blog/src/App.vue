@@ -35,17 +35,16 @@
           </form>
         </div>
       </div>
-    </nav>
-    <div class="container mt-4">
-      <h5>블로그 입니당</h5>
-      <p>- Vue & BootStrap 으로 만듬 -</p>
-      <list v-for="(item,i) in blogData" :key="i" :blogData="blogData[i]" />
-    </div>
+    </nav>    
+    <!-- <router-view v-for="(item,i) in blogData" :key="i" :blogData="blogData[i]"></router-view> -->
+    <router-view :blogData="blogData"></router-view>
+    <router-link to="/list">리스트페이지 이동</router-link>
+    <!-- <List v-for="(item,i) in blogData" :key="i" :blogData="blogData[i]" /> -->
   </div>
 </template>
 
 <script>
-import list from '@/components/list';
+// import List from '@/components/List';
 
 export default {
   name: 'App',
@@ -63,7 +62,7 @@ export default {
           date : 'October 20, 2020',
           number : 1
         },{ 
-          title : '셋 째 프로젝트 : 현피 앱',
+          title : '셋 째 프로젝트 : 파이터 앱',
           content : '거리를 설정하면 가장 가까운 파이터를 소개해드려요! 서로 싸워보세요',
           date : 'April 24, 2019',
           number : 2
@@ -71,9 +70,9 @@ export default {
       ]
     }
   },
-  components:{
-    list
-  }
+  // components:{
+  //   List
+  // }
 }
 </script>
 
